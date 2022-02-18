@@ -1,0 +1,2 @@
+drivers/scsi/initio.o
+

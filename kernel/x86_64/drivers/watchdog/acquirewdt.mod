@@ -1,0 +1,2 @@
+drivers/watchdog/acquirewdt.o
+

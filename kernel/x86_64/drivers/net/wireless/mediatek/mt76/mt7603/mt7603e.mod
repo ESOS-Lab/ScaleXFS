@@ -1,0 +1,2 @@
+drivers/net/wireless/mediatek/mt76/mt7603/pci.o drivers/net/wireless/mediatek/mt76/mt7603/soc.o drivers/net/wireless/mediatek/mt76/mt7603/main.o drivers/net/wireless/mediatek/mt76/mt7603/init.o drivers/net/wireless/mediatek/mt76/mt7603/mcu.o drivers/net/wireless/mediatek/mt76/mt7603/core.o drivers/net/wireless/mediatek/mt76/mt7603/dma.o drivers/net/wireless/mediatek/mt76/mt7603/mac.o drivers/net/wireless/mediatek/mt76/mt7603/eeprom.o drivers/net/wireless/mediatek/mt76/mt7603/beacon.o drivers/net/wireless/mediatek/mt76/mt7603/debugfs.o
+

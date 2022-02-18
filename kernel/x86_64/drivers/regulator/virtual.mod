@@ -1,0 +1,2 @@
+drivers/regulator/virtual.o
+

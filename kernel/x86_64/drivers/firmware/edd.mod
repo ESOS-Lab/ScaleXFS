@@ -1,0 +1,2 @@
+drivers/firmware/edd.o
+

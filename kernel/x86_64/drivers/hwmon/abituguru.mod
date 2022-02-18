@@ -1,0 +1,2 @@
+drivers/hwmon/abituguru.o
+

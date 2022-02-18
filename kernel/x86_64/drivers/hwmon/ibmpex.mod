@@ -1,0 +1,2 @@
+drivers/hwmon/ibmpex.o
+

@@ -1,0 +1,2 @@
+drivers/tty/synclink.o
+

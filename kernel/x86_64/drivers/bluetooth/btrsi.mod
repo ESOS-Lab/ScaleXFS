@@ -1,0 +1,2 @@
+drivers/bluetooth/btrsi.o
+

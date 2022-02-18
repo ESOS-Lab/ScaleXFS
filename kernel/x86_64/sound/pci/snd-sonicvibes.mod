@@ -1,0 +1,2 @@
+sound/pci/sonicvibes.o
+

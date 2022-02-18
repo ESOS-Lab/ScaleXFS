@@ -1,0 +1,2 @@
+drivers/infiniband/hw/i40iw/i40iw_cm.o drivers/infiniband/hw/i40iw/i40iw_ctrl.o drivers/infiniband/hw/i40iw/i40iw_hmc.o drivers/infiniband/hw/i40iw/i40iw_hw.o drivers/infiniband/hw/i40iw/i40iw_main.o drivers/infiniband/hw/i40iw/i40iw_pble.o drivers/infiniband/hw/i40iw/i40iw_puda.o drivers/infiniband/hw/i40iw/i40iw_uk.o drivers/infiniband/hw/i40iw/i40iw_utils.o drivers/infiniband/hw/i40iw/i40iw_verbs.o drivers/infiniband/hw/i40iw/i40iw_virtchnl.o drivers/infiniband/hw/i40iw/i40iw_vf.o
+

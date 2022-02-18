@@ -1,0 +1,2 @@
+drivers/vhost/scsi.o
+

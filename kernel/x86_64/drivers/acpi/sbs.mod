@@ -1,0 +1,2 @@
+drivers/acpi/sbs.o
+

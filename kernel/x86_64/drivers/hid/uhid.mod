@@ -1,0 +1,2 @@
+drivers/hid/uhid.o
+

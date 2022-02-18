@@ -1,0 +1,2 @@
+drivers/watchdog/hpwdt.o
+

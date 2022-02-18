@@ -1,0 +1,2 @@
+drivers/net/ethernet/pensando/ionic/ionic_main.o drivers/net/ethernet/pensando/ionic/ionic_bus_pci.o drivers/net/ethernet/pensando/ionic/ionic_devlink.o drivers/net/ethernet/pensando/ionic/ionic_dev.o drivers/net/ethernet/pensando/ionic/ionic_debugfs.o drivers/net/ethernet/pensando/ionic/ionic_lif.o drivers/net/ethernet/pensando/ionic/ionic_rx_filter.o drivers/net/ethernet/pensando/ionic/ionic_ethtool.o drivers/net/ethernet/pensando/ionic/ionic_txrx.o drivers/net/ethernet/pensando/ionic/ionic_stats.o
+

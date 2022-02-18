@@ -1,0 +1,2 @@
+drivers/scsi/st.o
+

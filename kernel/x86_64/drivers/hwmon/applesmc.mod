@@ -1,0 +1,2 @@
+drivers/hwmon/applesmc.o
+

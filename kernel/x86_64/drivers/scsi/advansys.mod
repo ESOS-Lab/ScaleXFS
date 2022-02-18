@@ -1,0 +1,2 @@
+drivers/scsi/advansys.o
+

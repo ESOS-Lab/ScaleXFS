@@ -1,0 +1,2 @@
+drivers/nvdimm/pmem.o
+

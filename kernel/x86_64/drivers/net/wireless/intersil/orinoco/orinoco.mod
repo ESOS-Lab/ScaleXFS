@@ -1,0 +1,2 @@
+drivers/net/wireless/intersil/orinoco/main.o drivers/net/wireless/intersil/orinoco/fw.o drivers/net/wireless/intersil/orinoco/hw.o drivers/net/wireless/intersil/orinoco/mic.o drivers/net/wireless/intersil/orinoco/scan.o drivers/net/wireless/intersil/orinoco/wext.o drivers/net/wireless/intersil/orinoco/hermes_dld.o drivers/net/wireless/intersil/orinoco/hermes.o drivers/net/wireless/intersil/orinoco/cfg.o
+

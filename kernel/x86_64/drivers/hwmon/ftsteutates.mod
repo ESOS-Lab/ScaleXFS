@@ -1,0 +1,2 @@
+drivers/hwmon/ftsteutates.o
+

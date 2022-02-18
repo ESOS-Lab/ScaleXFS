@@ -1,0 +1,2 @@
+sound/soc/intel/skylake/skl.o sound/soc/intel/skylake/skl-pcm.o sound/soc/intel/skylake/skl-nhlt.o sound/soc/intel/skylake/skl-messages.o sound/soc/intel/skylake/skl-topology.o sound/soc/intel/skylake/skl-sst-ipc.o sound/soc/intel/skylake/skl-sst-dsp.o sound/soc/intel/skylake/cnl-sst-dsp.o sound/soc/intel/skylake/skl-sst-cldma.o sound/soc/intel/skylake/skl-sst.o sound/soc/intel/skylake/bxt-sst.o sound/soc/intel/skylake/cnl-sst.o sound/soc/intel/skylake/skl-sst-utils.o sound/soc/intel/skylake/skl-debug.o
+
