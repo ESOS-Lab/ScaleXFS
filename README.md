@@ -1,6 +1,6 @@
 ScaleXFS: Getting scalability of XFS back on the ring
 -----
-* Maintainer : Dohyun Kim(ehgus421210)
+* Maintainer : Dohyun Kim(dohyun4212)
 * Contributor : Dohyun Kim, Kwangwon Min, Joontaek Oh, Youjip Won
 
 ScaleXFS is the newly developed filesystem which addresses two primary causes for XFS scalability failures: Contention between in-memory logging and on-disk logging and Contention among the multiple concurrent in-memory loggings.
