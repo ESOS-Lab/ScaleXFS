@@ -26,7 +26,7 @@ Mount Options for ScaleXFS
         # Key Techniques
         # (i) Double commited item list
         # (ii) Per-core in-memory logging
-        # (iii) Strided space counting (we recommand 8 Kbyte stride length).
+        # (iii) Strided space counting (we recommand using 8 Kbyte stride length).
 
         [No option]: XFS + (i)
         -o lspercpu=0: XFS + (i) + (ii)
