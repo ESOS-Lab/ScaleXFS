@@ -1156,6 +1156,7 @@ xfs_create(
 	 * the case we'll drop the one we have and get a more
 	 * appropriate transaction later.
 	 */
+
 	error = xfs_trans_alloc(mp, tres, resblks, 0, 0, &tp);
 	if (error == -ENOSPC) {
 		/* flush outstanding delalloc blocks and retry */
@@ -2881,6 +2882,7 @@ xfs_remove(
 	 * insert tries to happen, instead trimming the LAST
 	 * block from the directory.
 	 */
+
 	resblks = XFS_REMOVE_SPACE_RES(mp);
 	error = xfs_trans_alloc(mp, &M_RES(mp)->tr_remove, resblks, 0, 0, &tp);
 	if (error == -ENOSPC) {
@@ -2956,7 +2958,6 @@ xfs_remove(
 
 	if (is_dir && xfs_inode_is_filestream(ip))
 		xfs_filestream_deassociate(ip);
-
 	return 0;
 
  out_trans_cancel:

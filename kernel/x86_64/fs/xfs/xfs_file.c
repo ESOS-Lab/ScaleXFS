@@ -116,10 +116,12 @@ xfs_file_fsync(
 	 * ensure newly written file data make it to disk before logging the new
 	 * inode size in case of an extending write.
 	 */
-	if (XFS_IS_REALTIME_INODE(ip))
-		xfs_blkdev_issue_flush(mp->m_rtdev_targp);
-	else if (mp->m_logdev_targp != mp->m_ddev_targp)
-		xfs_blkdev_issue_flush(mp->m_ddev_targp);
+	if (mp->m_flags & XFS_MOUNT_BARRIER) {
+		if (XFS_IS_REALTIME_INODE(ip))
+			xfs_blkdev_issue_flush(mp->m_rtdev_targp);
+		else if (mp->m_logdev_targp != mp->m_ddev_targp)
+			xfs_blkdev_issue_flush(mp->m_ddev_targp);
+	}
 
 	/*
 	 * All metadata updates are logged, which means that we just have to
@@ -155,7 +157,8 @@ xfs_file_fsync(
 	 * commit.
 	 */
 	if (!log_flushed && !XFS_IS_REALTIME_INODE(ip) &&
-	    mp->m_logdev_targp == mp->m_ddev_targp)
+	    mp->m_logdev_targp == mp->m_ddev_targp &&
+	    (mp->m_flags & XFS_MOUNT_BARRIER))
 		xfs_blkdev_issue_flush(mp->m_ddev_targp);
 
 	return error;

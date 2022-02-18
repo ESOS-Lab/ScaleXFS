@@ -44,8 +44,8 @@ struct xfs_log_item {
 	const struct xfs_item_ops	*li_ops;	/* function list */
 
 	/* delayed logging */
-	struct list_head		li_cil;		/* CIL pointers */
-	struct xfs_log_vec		*li_lv;		/* active log vector */
+	struct list_head		li_cil[2];	/* CIL pointers */
+	struct xfs_log_vec		*li_lv[2];	/* active log vector */
 	struct xfs_log_vec		*li_lv_shadow;	/* standby vector */
 	xfs_lsn_t			li_seq;		/* CIL commit seq */
 };

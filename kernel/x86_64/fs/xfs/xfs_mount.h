@@ -55,6 +55,73 @@ struct xfs_error_cfg {
 	long		retry_timeout;	/* in jiffies, -1 = infinite */
 };
 
+#define xfs_stcheck1_stat_store() \
+do { \
+	spin_lock(&log->l_mp->stcheck1_lock); 	\
+	for_each_possible_cpu(cpu) {		\
+		usedp = per_cpu_ptr(		\
+			log->l_mp->stcheck1_used,\
+			 cpu); 			\
+		used = *usedp >> 6;		\
+		for (i = 0; i < 7; i++)		\
+			if (used < (2<<i))	\
+				break;		\
+		log->l_mp->stcheck1_histo[i]++;	\
+	}					\
+	spin_unlock(&log->l_mp->stcheck1_lock);	\
+} while (false)	
+	
+
+#define xfs_swtch_stat_store() \
+do { \
+	swtch_end = ktime_get_mono_fast_ns();	\
+	swtch_time = swtch_end - swtch_start;	\
+	if (swtch_time < 100) 			\
+		i = 0; 				\
+	else if (swtch_time < 1000) 		\
+		i = 1; 				\
+	else if (swtch_time < 10000) 		\
+		i = 2; 				\
+	else if (swtch_time < 100000) 		\
+		i = 3; 				\
+	else if (swtch_time < 1000000) 		\
+		i = 4; 				\
+	else if (swtch_time < 10000000) 	\
+		i = 5; 				\
+	else 					\
+		i = 6; 				\
+	spin_lock_bh(&mp->swtch_stat_lock); 	\
+	mp->swtch_stat_histo[i]++; 		\
+	spin_unlock_bh(&mp->swtch_stat_lock); 	\
+} while (false)
+
+#define xfs_trans_stat_store() \
+do { \
+	if (len < 20)				\
+		i = 0;				\
+	else if (len < 1024)			\
+		i = 1;				\
+	else if (len < 4096)			\
+		i = 2;				\
+	else if (len < 8192)			\
+		i = 3;				\
+	else if (len < 16384)			\
+		i = 4;				\
+	else if (len < 32768)			\
+		i = 5;				\
+	else if (len < 65536)			\
+		i = 6;				\
+	else if (len < 131072)			\
+		i = 7;				\
+	else if (len < 262144)			\
+		i = 8;				\
+	else					\
+		i = 9;				\
+	spin_lock(&log->l_mp->trans_stat_lock);	\
+	log->l_mp->trans_stat_histo[i]++;	\
+	spin_unlock(&log->l_mp->trans_stat_lock);\
+} while (false)
+
 /*
  * The struct xfsmount layout is optimised to separate read-mostly variables
  * from variables that are frequently modified. We put the read-mostly variables
@@ -64,6 +131,7 @@ struct xfs_error_cfg {
  * never changed again, or only change rarely as a result of things like sysfs
  * knobs being tweaked.
  */
+
 typedef struct xfs_mount {
 	struct xfs_sb		m_sb;		/* copy of fs superblock */
 	struct super_block	*m_super;
@@ -217,6 +285,7 @@ typedef struct xfs_mount {
 	unsigned int		*m_errortag;
 	struct xfs_kobj		m_errortag_kobj;
 #endif
+	int			m_lspercpu;
 } xfs_mount_t;
 
 #define M_IGEO(mp)		(&(mp)->m_ino_geo)
@@ -254,6 +323,7 @@ typedef struct xfs_mount {
 #define XFS_MOUNT_NOATTR2	(1ULL << 25)	/* disable use of attr2 format */
 #define XFS_MOUNT_DAX_ALWAYS	(1ULL << 26)
 #define XFS_MOUNT_DAX_NEVER	(1ULL << 27)
+#define XFS_MOUNT_BARRIER	(1ULL << 28)
 
 /*
  * Max and min values for mount-option defined I/O

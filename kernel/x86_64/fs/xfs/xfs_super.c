@@ -39,6 +39,7 @@
 #include <linux/magic.h>
 #include <linux/fs_context.h>
 #include <linux/fs_parser.h>
+#include <linux/delay.h>
 
 static const struct super_operations xfs_super_operations;
 
@@ -46,6 +47,9 @@ static struct kset *xfs_kset;		/* top-level xfs sysfs dir */
 #ifdef DEBUG
 static struct xfs_kobj xfs_dbg_kobj;	/* global debug sysfs attrs */
 #endif
+
+void xfs_dhstat_proc_create (struct xfs_mount *mp);
+void xfs_dhstat_proc_remove (struct xfs_mount *mp);
 
 enum xfs_dax_mode {
 	XFS_DAX_INODE = 0,
@@ -93,6 +97,7 @@ enum {
 	Opt_prjquota, Opt_uquota, Opt_gquota, Opt_pquota,
 	Opt_uqnoenforce, Opt_gqnoenforce, Opt_pqnoenforce, Opt_qnoenforce,
 	Opt_discard, Opt_nodiscard, Opt_dax, Opt_dax_enum,
+	Opt_dsptiming, Opt_logscale_percpu, Opt_nobarrier, 
 };
 
 static const struct fs_parameter_spec xfs_fs_parameters[] = {
@@ -137,6 +142,8 @@ static const struct fs_parameter_spec xfs_fs_parameters[] = {
 	fsparam_flag("nodiscard",	Opt_nodiscard),
 	fsparam_flag("dax",		Opt_dax),
 	fsparam_enum("dax",		Opt_dax_enum, dax_param_enums),
+	fsparam_string("lspercpu",	Opt_logscale_percpu),
+	fsparam_flag("nobarrier",	Opt_nobarrier),
 	{}
 };
 
@@ -1167,6 +1174,13 @@ xfs_fc_parse_param(
 		return opt;
 
 	switch (opt) {
+	case Opt_nobarrier:
+		mp->m_flags &= ~XFS_MOUNT_BARRIER;
+		return 0;
+	case Opt_logscale_percpu:
+		if (suffix_kstrtoint(param->string, 10, &mp->m_lspercpu))
+			return -EINVAL;
+		return 0;
 	case Opt_logbufs:
 		mp->m_logbufs = result.uint_32;
 		return 0;
@@ -1388,7 +1402,7 @@ xfs_fc_fill_super(
 	error = xfs_fc_validate_params(mp);
 	if (error)
 		goto out_free_names;
-
+	
 	sb_min_blocksize(sb, BBSIZE);
 	sb->s_xattr = xfs_xattr_handlers;
 	sb->s_export_op = &xfs_export_operations;
@@ -1781,6 +1795,11 @@ static int xfs_init_fs_context(
 	mp = kmem_alloc(sizeof(struct xfs_mount), KM_ZERO);
 	if (!mp)
 		return -ENOMEM;
+
+	/* [DH] added parameter */
+	mp->m_lspercpu = -1;
+
+	mp->m_flags |= XFS_MOUNT_BARRIER;
 
 	spin_lock_init(&mp->m_sb_lock);
 	spin_lock_init(&mp->m_agirotor_lock);

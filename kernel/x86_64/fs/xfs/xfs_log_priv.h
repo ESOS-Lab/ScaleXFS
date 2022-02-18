@@ -237,7 +237,9 @@ struct xfs_cil_ctx {
 	int			nvecs;		/* number of regions */
 	int			space_used;	/* aggregate size of regions */
 	struct list_head	busy_extents;	/* busy extents in chkpt */
-	struct xfs_log_vec	*lv_chain;	/* logvecs being pushed */
+	struct list_head	lv_list;
+#define	lv_chain		lv_list.next
+	//struct xfs_log_vec	*lv_chain;	/* logvecs being pushed */
 	struct list_head	iclog_entry;
 	struct list_head	committing;	/* ctx committing list */
 	struct work_struct	discard_endio_work;
@@ -261,11 +263,9 @@ struct xfs_cil_ctx {
  */
 struct xfs_cil {
 	struct xlog		*xc_log;
-	struct list_head	xc_cil;
-	spinlock_t		xc_cil_lock;
 
-	struct rw_semaphore	xc_ctx_lock ____cacheline_aligned_in_smp;
-	struct xfs_cil_ctx	*xc_ctx;
+	struct mutex		xc_dlog_lock;
+	struct xlog_scale 	*xc_scale;
 
 	spinlock_t		xc_push_lock ____cacheline_aligned_in_smp;
 	xfs_lsn_t		xc_push_seq;

@@ -1790,7 +1790,8 @@ xfs_free_buftarg(
 	percpu_counter_destroy(&btp->bt_io_count);
 	list_lru_destroy(&btp->bt_lru);
 
-	xfs_blkdev_issue_flush(btp);
+	if (btp->bt_mount->m_flags & XFS_MOUNT_BARRIER)
+		xfs_blkdev_issue_flush(btp);
 
 	kmem_free(btp);
 }

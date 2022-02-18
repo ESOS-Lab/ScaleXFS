@@ -140,6 +140,7 @@ typedef __u32			xfs_nlink_t;
 #define XFS_PROJID_DEFAULT	0
 
 #define howmany(x, y)	(((x)+((y)-1))/(y))
+#define howmany_bitwise(x,y,z)	(((x)+((y)))>>(z))
 
 static inline void delay(long ticks)
 {

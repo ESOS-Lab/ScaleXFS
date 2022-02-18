@@ -20,6 +20,7 @@
 #include "xfs_sysfs.h"
 #include "xfs_sb.h"
 #include "xfs_health.h"
+#include "xfs_log_scale.h"
 
 kmem_zone_t	*xfs_log_ticket_zone;
 
@@ -510,6 +511,18 @@ xlog_state_release_iclog(
 }
 
 void
+xfs_log_switch_iclogs(
+	struct xlog_in_core	*iclog)
+{
+	struct xlog		*log = iclog->ic_log;
+
+	spin_lock(&log->l_icloglock);
+	if (iclog->ic_state == XLOG_STATE_ACTIVE)
+		xlog_state_switch_iclogs(log, iclog, 0);
+	spin_unlock(&log->l_icloglock);
+}
+
+void
 xfs_log_release_iclog(
 	struct xlog_in_core	*iclog)
 {
@@ -980,10 +993,12 @@ xfs_log_item_init(
 	item->li_ailp = mp->m_ail;
 	item->li_type = type;
 	item->li_ops = ops;
-	item->li_lv = NULL;
+	item->li_lv[0] = NULL;
+	item->li_lv[1] = NULL;
 
 	INIT_LIST_HEAD(&item->li_ail);
-	INIT_LIST_HEAD(&item->li_cil);
+	INIT_LIST_HEAD(&item->li_cil[0]);
+	INIT_LIST_HEAD(&item->li_cil[1]);
 	INIT_LIST_HEAD(&item->li_bio_list);
 	INIT_LIST_HEAD(&item->li_trans);
 }
@@ -1046,7 +1061,7 @@ xfs_log_need_covered(xfs_mount_t *mp)
 	if (!xfs_fs_writable(mp, SB_FREEZE_WRITE))
 		return 0;
 
-	if (!xlog_cil_empty(log))
+	if (!xlog_scale_allcil_empty_locked(log->l_cilp))
 		return 0;
 
 	spin_lock(&log->l_icloglock);
@@ -1700,6 +1715,10 @@ xlog_write_iclog(
 	if (need_flush)
 		iclog->ic_bio.bi_opf |= REQ_PREFLUSH;
 
+	if (!(log->l_mp->m_flags & XFS_MOUNT_BARRIER)) {
+		iclog->ic_bio.bi_opf &= ~(REQ_PREFLUSH | REQ_FUA);
+	}
+
 	if (xlog_map_iclog_data(&iclog->ic_bio, iclog->ic_data, count)) {
 		xfs_force_shutdown(log->l_mp, SHUTDOWN_LOG_IO_ERROR);
 		return;
@@ -2022,7 +2041,7 @@ xlog_print_trans(
 
 	/* dump each log item */
 	list_for_each_entry(lip, &tp->t_items, li_trans) {
-		struct xfs_log_vec	*lv = lip->li_lv;
+		struct xfs_log_vec	*lv = lip->li_lv[0];
 		struct xfs_log_iovec	*vec;
 		int			i;
 
@@ -2068,7 +2087,8 @@ xlog_write_calc_vec_length(
 	int			len = 0;
 	int			i;
 
-	for (lv = log_vector; lv; lv = lv->lv_next) {
+	for (lv = log_vector; lv; 
+	     lv = (struct xfs_log_vec *) lv->lv_next) {
 		/* we don't write ordered log vectors */
 		if (lv->lv_buf_len == XFS_LOG_VEC_ORDERED)
 			continue;
@@ -2431,7 +2451,7 @@ xlog_write(
 
 			if (++index == lv->lv_niovecs) {
 next_lv:
-				lv = lv->lv_next;
+				lv = (struct xfs_log_vec *) lv->lv_next;
 				index = 0;
 				if (lv)
 					vecp = lv->lv_iovecp;
@@ -3266,6 +3286,7 @@ xfs_log_force_lsn(
 	int			*log_flushed)
 {
 	int			ret;
+
 	ASSERT(lsn != 0);
 
 	XFS_STATS_INC(mp, xs_log_force);
@@ -3276,8 +3297,10 @@ xfs_log_force_lsn(
 		return 0;
 
 	ret = __xfs_log_force_lsn(mp, lsn, flags, log_flushed, false);
-	if (ret == -EAGAIN)
+	if (ret == -EAGAIN) {
 		ret = __xfs_log_force_lsn(mp, lsn, flags, log_flushed, true);
+	}
+
 	return ret;
 }
 

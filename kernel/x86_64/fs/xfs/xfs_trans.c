@@ -747,10 +747,11 @@ xfs_trans_committed_bulk(
 	spin_unlock(&ailp->ail_lock);
 
 	/* unpin all the log items */
-	for (lv = log_vector; lv; lv = lv->lv_next ) {
+	for (lv = log_vector; lv; 
+	     lv = (struct xfs_log_vec *) lv->lv_next) {
 		struct xfs_log_item	*lip = lv->lv_item;
 		xfs_lsn_t		item_lsn;
-
+		
 		if (aborted)
 			set_bit(XFS_LI_ABORTED, &lip->li_flags);
 

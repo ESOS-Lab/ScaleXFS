@@ -580,7 +580,6 @@ xfsaild(
 	struct xfs_ail	*ailp = data;
 	long		tout = 0;	/* milliseconds */
 	unsigned int	noreclaim_flag;
-
 	noreclaim_flag = memalloc_noreclaim_save();
 	set_freezable();
 
@@ -648,7 +647,7 @@ xfsaild(
 		__set_current_state(TASK_RUNNING);
 
 		try_to_freeze();
-
+		
 		tout = xfsaild_push(ailp);
 	}
 

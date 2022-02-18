@@ -2,8 +2,9 @@
 VERSION = 5
 PATCHLEVEL = 8
 SUBLEVEL = 5
-EXTRAVERSION =
+EXTRAVERSION = -xfs-scale
 NAME = Kleptomaniac Octopus
+CROSS_COMPILE=/opt/rh/devtoolset-8/root/bin/
 
 # *DOCUMENTATION*
 # To see a list of typical targets execute "make help"

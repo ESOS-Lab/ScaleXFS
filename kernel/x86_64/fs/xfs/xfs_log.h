@@ -9,14 +9,19 @@
 struct xfs_cil_ctx;
 
 struct xfs_log_vec {
-	struct xfs_log_vec	*lv_next;	/* next lv in build list */
+	/* for CIL ordering */
+	struct list_head	lv_list;	/* log vector chain */
+	uint64_t		lv_ts;		/* timestamp */	
+#define lv_next 		lv_list.next
+
+	//struct xfs_log_vec	*lv_next;	/* next lv in build list */
 	int			lv_niovecs;	/* number of iovecs in lv */
 	struct xfs_log_iovec	*lv_iovecp;	/* iovec array */
 	struct xfs_log_item	*lv_item;	/* owner */
 	char			*lv_buf;	/* formatted buffer */
 	int			lv_bytes;	/* accounted space in buffer */
 	int			lv_buf_len;	/* aligned size of buffer */
-	int			lv_size;	/* size of allocated lv */
+	int			lv_size;	/* size of allocated lv */	
 };
 
 #define XFS_LOG_VEC_ORDERED	(-1)
@@ -117,6 +122,7 @@ void	xfs_log_mount_cancel(struct xfs_mount *);
 xfs_lsn_t xlog_assign_tail_lsn(struct xfs_mount *mp);
 xfs_lsn_t xlog_assign_tail_lsn_locked(struct xfs_mount *mp);
 void	  xfs_log_space_wake(struct xfs_mount *mp);
+void	  xfs_log_switch_iclogs(struct xlog_in_core *iclog);
 void	  xfs_log_release_iclog(struct xlog_in_core *iclog);
 int	  xfs_log_reserve(struct xfs_mount *mp,
 			  int		   length,
